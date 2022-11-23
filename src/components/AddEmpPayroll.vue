@@ -17,19 +17,19 @@
                 <label class="label text  label-fields" for="profile">Profile </label>
                 <div class="profile-radio-content">
                     <label>
-                        <input v-model="profile" type="radio" id="profile1" name="profile" value="../assets/photos/profile2.webp" required>
+                        <input v-model="profile" type="radio" id="profile1" name="profile" value="profile2.webp" required>
                         <img class="profile" id="image1" src="../assets/photos/profile2.webp">
                     </label>
                     <label>
-                        <input v-model="profile" type="radio" id="profile2" name="profile" value="../assets/photos/profile4.png" required>
+                        <input v-model="profile" type="radio" id="profile2" name="profile" value="profile4.png" required>
                         <img class="profile" id="image2" src="../assets/photos/profile4.png">
                     </label>
                     <label>
-                        <input v-model="profile" type="radio" id="profile3" name="profile" value="../assets/photos/profile8.jpg" required>
+                        <input v-model="profile" type="radio" id="profile3" name="profile" value="profile8.jpg" required>
                         <img class="profile" id="image3" src="../assets/photos/profile8.jpg">
                     </label>
                     <label>
-                        <input v-model="profile" type="radio" id="profile4" name="profile" value="../assets/photos/profile7.jpg" required>
+                        <input v-model="profile" type="radio" id="profile4" name="profile" value="profile7.jpg" required>
                         <img class="profile" id="image4" src="../assets/photos/profile7.jpg">
                     </label>
                 </div>
@@ -141,7 +141,8 @@
 </template>
 
 <script>
-import axios from 'axios';
+
+import EmpPayrollService from '../service/EmpPayrollService'
 
 export default {
   name: 'AddEmpPayroll',
@@ -159,12 +160,13 @@ export default {
         year:2020,
         profile:'',
         email:'',
-        response:''
+        response:'',
+        empPayrollService: new EmpPayrollService()
     }
   },
   methods:{
     AddEmployeePayrollData(){
-        axios.post('http://localhost:8080/emp/add',{
+        this.empPayrollService.add({
             name:this.name,
             gender:this.gender,
             departments:this.departments,
@@ -173,8 +175,14 @@ export default {
             profile:this.profile,
             email:this.email
         })
-        .then(response => {this.response = JSON.stringify(response, null, 2)})
-        .catch(error => this.response = 'Error: ' + error.response.status);
+        .then(response => {
+            this.response = JSON.stringify(response, null, 2)
+            alert('Employee ' + this.name + ' added successfully')
+        })
+        .catch(error => {
+            alert('Error adding Employee ' + this.name + ' ' + error.message )
+            this.response = 'Error: ' + error.response.status
+        });
     }
   }
 }

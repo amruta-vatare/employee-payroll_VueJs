@@ -10,7 +10,7 @@
         </div>
         <nav>
       <router-link to="/">Home</router-link> |
-      <router-link to="/addemppayroll">Add Employee Payroll</router-link>
+      <!-- <router-link to="/addemppayroll">Add Employee Payroll</router-link> -->
     </nav>
     </header>
     <router-view/>

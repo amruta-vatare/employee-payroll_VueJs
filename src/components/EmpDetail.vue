@@ -4,45 +4,63 @@
             <div class="emp-detail-text">
                 Employee Details <div class="emp-count">10</div>
             </div>
-            <a href="../html/employee_payroll.html" class="add-button">
-                <img src="../assets/photos/plus-math.png"  height="20px" width="20px" alt="">Add User</a>
+            <router-link to="/addemppayroll" class="add-button"><img src="../assets/photos/plus-math.png"  height="20px" width="20px" alt="">Add User</router-link>
         </div>
         <table id="display" class="table">
             <tr>
                 <th></th><th>name</th><th>Gender</th><th>Department</th><th>Salary</th><th>StartDate</th><th>Action</th>
             </tr>
             <tr v-for="emp in empData" :key="emp">
-                <td><img :src="emp.profile"/></td>
+                <td><img src="`../assets/photos/emp.profile`"/></td>
                 <td>{{emp.name}}</td>
                 <td>{{emp.gender}}</td>
                 <td><div class="dept-label" v-for="dept in emp.departments" :key="dept">{{dept}}</div></td>
                 <td>{{emp.salary}}</td>
                 <td>{{emp.startDate}}</td>
-                <td></td>
+                <td>
+                    <span>
+                        <img src="../assets/photos/edit.png" height="15px" width="15px"/>
+                    </span>
+                    <span @click="deleteEmployee(emp.id)">
+                        <img src="../assets/photos/delete.png" height="15px" width="15px"/>
+                    </span>
+                </td>
             </tr>
         </table>
     </div>
 </template>
 
 <script>
-import axios from 'axios'; 
+import EmpPayrollService from '@/service/EmpPayrollService';
 export default {
   name: 'EmpDetail',
   props: {},
   data(){
         return{
             empData : [],
-            src:""
+            src:"",
+            empPayrollService: new EmpPayrollService()
         }
     },
     methods:{
         getEmpPayrollList(){
-            axios
-                .get('http://localhost:8080/emp/all')
+            this.empPayrollService.getAll()
                 .then(
                     res => {
                         this.empData = res.data;
                 })
+        },
+        deleteEmployee(id){
+            this.empPayrollService.delete(id)
+            .then(
+                (res)=>{
+                    alert("Employee deleted successfully "+id+" "+res.status);
+                }       
+            )
+            .catch(error => {
+                alert('Error deleting Employee having id ' + id + ' ' + error.message )
+                this.response = 'Error: ' + error.response.status
+            });
         }
     },
     created(){
