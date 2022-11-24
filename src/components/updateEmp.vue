@@ -1,17 +1,17 @@
 <template>
     <div class="body">
         <div class="form-content">
-        <form class="form" @submit.prevent="AddEmployeePayrollData">
-            <div class="form-head">Employee Payroll Form</div>
+        <form class="form" @submit.prevent="updateEmp">
+            <div class="form-head">Update Payroll Form</div>
             <div class="row-content">
                 <label class="label text label-fields">Name</label>
                 <input v-model="name" class="input" type="text" id="name" name="name" placeholder="Your name..">
-                <error-output class="text-error" for="text"></error-output>
+                <!-- <error-output class="text-error" for="text"></error-output> -->
             </div>
             <div class="row-content">
                 <label class="label text label-fields">Email</label>
                 <input v-model="email" class="input" type="text" id="email" name="email" placeholder="Your email..">
-                <error-output class="text-error" for="text"></error-output>
+                <!-- <error-output class="text-error" for="text"></error-output> -->
             </div>
             <div class="row-content">
                 <label class="label text  label-fields" for="profile">Profile </label>
@@ -132,7 +132,7 @@
             <div class="buttonParent">
                 <a href="#" class="resetButton button cancelButton">Cancel</a>
                 <div>
-                    <button type="submit" class="button submitButton" id="submitButton">Submit</button>
+                    <button type="submit" class="button submitButton" id="submitButton">Update</button>
                     <button type="reset" class="resetButton button">Reset</button>
                 </div>
             </div>
@@ -146,12 +146,13 @@
 import EmpPayrollService from '../service/EmpPayrollService'
 
 export default {
-  name: 'AddEmpPayroll',
+  name: 'updateEmp',
   props: {
     msg: String
   },
   data(){
     return { 
+        id: -99,
         name:'',
         gender:'',
         departments:[],
@@ -166,8 +167,8 @@ export default {
     }
   },
   methods:{
-    AddEmployeePayrollData(){
-        this.empPayrollService.add({
+    updateEmp(){
+        this.empPayrollService.updateEmp({
             name:this.name,
             gender:this.gender,
             departments:this.departments,
@@ -175,17 +176,48 @@ export default {
             startDate: this.year + "-" + this.month + "-" + this.day,
             profile:this.profile,
             email:this.email
-        })
+        }, this.id)
         .then(response => {
             this.response = JSON.stringify(response, null, 2)
-            alert('Employee ' + this.name + ' added successfully')
+            alert('Employee ' + this.name + ' updated successfully')
         })
         .catch(error => {
-            alert('Error adding Employee ' + this.name + ' ' + error.message )
+            alert('Error updating Employee ' + this.name + ' ' + error.message )
+            this.response = 'Error: ' + error.response.status
+        });
+    },
+    getEmployeeById(id){
+        this.empPayrollService.getEmployeeById(id)
+        .then((response)=>{
+            let empObject = response.data;
+            this.name = empObject.name;
+            this.gender = empObject.gender;
+            this.departments = empObject.departments;
+            this.salary = empObject.salary;
+
+            //date logic
+            let dt = new Date(empObject.startDate);                        
+            this.day = dt.getDate();
+            let locMonth = dt.getMonth() + 1;
+            if(locMonth < 10){
+                locMonth = '0' + locMonth.toString();
+            }
+            this.month = locMonth;
+            this.year = dt.getFullYear();
+
+            this.profile = empObject.profile;
+            this.email = empObject.email;                  
+        })
+        .catch((error)=>{
+            alert('Error getting Employee having id ' + this.id + ' ' + error.message )
             this.response = 'Error: ' + error.response.status
         });
     }
-  }
+  },
+  created(){
+        this.id = this.$route.params.id;
+        this.getEmployeeById(this.id);   
+    }
 }
 </script>
 

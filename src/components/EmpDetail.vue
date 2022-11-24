@@ -11,14 +11,14 @@
                 <th></th><th>name</th><th>Gender</th><th>Department</th><th>Salary</th><th>StartDate</th><th>Action</th>
             </tr>
             <tr v-for="emp in empData" :key="emp">
-                <td><img src="`../assets/photos/emp.profile`"/></td>
+                <td><img  width="30px" height="30px" :src="`../assets/photos/${emp.profile}`"/></td>
                 <td>{{emp.name}}</td>
                 <td>{{emp.gender}}</td>
                 <td><div class="dept-label" v-for="dept in emp.departments" :key="dept">{{dept}}</div></td>
                 <td>{{emp.salary}}</td>
                 <td>{{emp.startDate}}</td>
                 <td>
-                    <span>
+                    <span  @click="updateEmployee(emp.id)">
                         <img src="../assets/photos/edit.png" height="15px" width="15px"/>
                     </span>
                     <span @click="deleteEmployee(emp.id)">
@@ -31,6 +31,7 @@
 </template>
 
 <script>
+import router from '@/router';
 import EmpPayrollService from '@/service/EmpPayrollService';
 export default {
   name: 'EmpDetail',
@@ -55,12 +56,17 @@ export default {
             .then(
                 (res)=>{
                     alert("Employee deleted successfully "+id+" "+res.status);
+                    this.router.push({name:"home"});
                 }       
             )
             .catch(error => {
                 alert('Error deleting Employee having id ' + id + ' ' + error.message )
                 this.response = 'Error: ' + error.response.status
             });
+        },
+
+        updateEmployee(id){
+           router.push({name:"updateEmp",params: { id: id }});
         }
     },
     created(){
